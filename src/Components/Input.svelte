@@ -1,6 +1,5 @@
 <script>
   export let name;
-  export let onChange;
   export let disabled;
 </script>
 
@@ -12,7 +11,7 @@
       class="input is-primary"
       {name}
       placeholder={name}
-      on:change={(e) => onChange(e.target.value)}
+      on:change
     />
   </p>
 </div>

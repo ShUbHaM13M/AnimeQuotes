@@ -1,44 +1,31 @@
 <script>
-  import Input from "./Input.svelte";
-  import Button from "./Button.svelte";
-  import CardContainer from "./CardContainer.svelte";
+  import Input from "./Components/Input.svelte";
+  import Button from "./Components/Button.svelte";
+  import CardContainer from "./Components/CardContainer.svelte";
+  import requestApi from "./utils/request";
 
   let animeName = "";
   let characterName = "";
-  const rootUrl = "https://animechanapi.xyz/api/quotes";
 
   let quotes = [];
   let isFetching = false;
 
-  const setAnimeName = (value) => {
-    animeName = value;
-  };
-
-  const setCharacterName = (value) => {
-    characterName = value;
-  };
-
   const handleSearch = () => {
+    isFetching = true;
     fetchQuotes();
   };
 
   const fetchQuotes = async () => {
-    isFetching = true;
     let query = "";
     if (animeName !== "") query = `?anime=${animeName}`;
     else if (characterName !== "") query = `?char=${characterName}`;
 
-    const searchUrl = `${rootUrl}${query}`;
-
     try {
-      const res = await fetch(searchUrl);
-      const data = await res.json();
-      quotes = data.data;
+      quotes = await requestApi(query);
+      isFetching = false;
     } catch (err) {
       console.log(err);
     }
-
-    isFetching = false;
   };
 </script>
 
@@ -49,27 +36,28 @@
       <Input
         disabled={characterName !== "" ? true : false}
         name="Enter Anime name"
-        onChange={setAnimeName}
+        on:change={(e) => (animeName = e.target.value)}
       />
     </div>
     <div class="column is-3">
       <Input
         disabled={animeName !== "" ? true : false}
         name="Enter Character name"
-        onChange={setCharacterName}
+        on:change={(e) => (characterName = e.target.value)}
       />
     </div>
     <div class="column is-1">
-      <Button isLoading={isFetching} name="Search" onClick={handleSearch} />
+      <Button isLoading={isFetching} name="Search" on:click={handleSearch} />
     </div>
   </div>
   <div class="section has-text-centered pt-0">
     <button
-      class={isFetching
-        ? "button is-primary inverted is-loading"
-        : "button is-primary inverted"}
-      on:click={handleSearch}>Generate Random</button
+      class:is-loading={isFetching === true}
+      class="button is-primary inverted"
+      on:click={handleSearch}
     >
+      Generate Random
+    </button>
   </div>
 
   {#if quotes.length}
