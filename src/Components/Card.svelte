@@ -1,8 +1,9 @@
 <script>
   export let content;
+  import { fade } from "svelte/transition";
 </script>
 
-<div class="card">
+<div class="card" in:fade={{ duration: 500 }}>
   <div class="card-content">
     <p class="title is-4">{content.quote}</p>
     <p class="subtitle">{content.character}</p>
